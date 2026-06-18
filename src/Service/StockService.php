@@ -55,4 +55,11 @@ class StockService{
             'num_lot' => $batch['num_lot']
         ];
     }
+
+    public function forceDestroyBatch(int $batchId): bool{
+        $stmt = $this->db->prepare("
+            UPDATE batches SET quantity = 0, status = 'EXPIRED' WHERE id = :id
+        ");
+        return $stmt->execute(['id' => $batchId]);
+    }
 }
