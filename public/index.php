@@ -34,4 +34,8 @@ if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
         $controller->destroyBatch();
         exit;
     }
+
+    header('HTTP/1.1 404 Not Found');
+    echo json_encode(['error' => 'Route API non trouvee']);
+    exit;
 }
