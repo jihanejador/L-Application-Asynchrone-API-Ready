@@ -26,5 +26,14 @@ class ApiStockController{
             echo json_decode(['error' => 'Donnees incompletes'])
             return;
         }
+
+        $success = $this->stockService->insertBatch((int)$medicamentId, (int)$quantite, $datePeremption, $numLot);
+
+        if ($success){
+            echo json_encode(['status' => 'success', 'message' => 'Lot ajoute de maniere asynchrone !']);
+        } else{
+            header('HTTP/1.1 500 Internal Server Error');
+            echo json_encode(['error' => 'Erreur lors de l\'insertion']);
+        }
     }
 }
