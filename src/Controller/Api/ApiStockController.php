@@ -36,4 +36,16 @@ class ApiStockController{
             echo json_encode(['error' => 'Erreur lors de l\'insertion']);
         }
     }
+    public function checkout(): void{
+        $this->authService->checkRoleOrAbort('PREPARATEUR');
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $medicamentId = $input['medicament_id'] ?? null;
+
+        if(!$medicamentId){
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode(['error' => 'ID Medicament requis']);
+            return;
+        }
+    }
 }
