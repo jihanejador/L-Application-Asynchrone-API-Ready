@@ -56,4 +56,15 @@ class ApiStockController{
             echo json_encode(['error' => 'Stock épuisé (Règle FEFO) !']);
         }
     }
+    public function destroyBatch(): void {
+        $this->authService->checkRoleOrAbort('PHARMACIEN');
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $batchId = $input['batch_id'] ?? null;
+
+        if (!$batchId) {
+            header('HTTP/1.1 400 Bad Request');
+            echo json_encode(['error' => 'ID du Lot requis']);
+            return;
+        }
 }
