@@ -39,3 +39,13 @@ if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
     echo json_encode(['error' => 'Route API non trouvee']);
     exit;
 }
+
+if($uri === '/login'){
+    $controller = new AuthController();
+    $controller->showLogin();
+} elseif ($uri === '/admin/reports'){
+    $controller = new AdminController();
+    $controller->showReports();
+} else {
+    echo "<h1>Page d'accueil / Dashboard HTML Initial</h1><p>Connectez-vous pour voir l'application.</p>";
+}
