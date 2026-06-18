@@ -35,5 +35,14 @@ class ApiDashboardController{
         }
         $stmt->execute();
         $batches = $stmt->fetchAll();
+
+        $countStmt = $this->db->prepare("
+            SELECT COUNT(*) as total_next_month FROM batches
+            WHERE date_peremption BETWEEN DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
+                                      AND DATE_ADD(CURDATE(), INTERVAL 2 MONTH)
+               AND quantity > 0
+        ");
+        $countStmt->execute();
+        $countData = $countStmt->fetch();
     }
 }
