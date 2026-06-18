@@ -44,5 +44,12 @@ class ApiDashboardController{
         ");
         $countStmt->execute();
         $countData = $countStmt->fetch();
+
+        echo json_encode([
+            'batches' => $batches,
+            'stats' => [
+                'périssent_le_mois_prochain' => (int)$countData['total_next_month']
+            ]
+        ]);
     }
 }
