@@ -22,4 +22,10 @@ if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
         $controller->getBatches();
         exit;
     }
+
+    if($uri === '/api/v1/batches/checkout' && ($method === 'POST' || $method === 'PATCH')){
+        $controller = new ApiStockController();
+        $controller->checkout();
+        exit;
+    }
 }
