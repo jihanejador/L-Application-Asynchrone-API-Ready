@@ -23,4 +23,15 @@ class StockService{
             'num_l' => $numLot
         ]);
     }
+
+    public function deliverOneBoxFEFO(int $medicamentId): ?array{
+        $stmt = $this->db->prepare("
+        SELECT * FROM batches
+        WHERE medicament_id = :med_id AND quantity > 0 AND status = 'AVAILABLE'
+        ORDER BY date_peremption ASC
+        LIMIT 1
+        ");
+        $stmt->execute(['med_id' => $medicamentId]);
+        $batch = $stmt->fetch();
+    }
 }
