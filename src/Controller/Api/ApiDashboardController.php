@@ -13,4 +13,19 @@ class ApiDashboardController{
         $this->authService = new AuthService();
         $this->db = Database::getConnection();
     }
+
+    public function getBatches(): void{
+        $this->authService->checkRoleOrAbort('PHARMACIEN');
+
+        $criteria = $_GET['criteria'] ?? 'all';
+
+        if($criteria === 'critical'){
+            $stmt = $this->db->prepare("
+                SELECT b.*, m.name as medicament_name FROM batches b
+                JOIN medicaments m ON b.medicament_id = m.id
+                WHERE b.date_peremption <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) AND b.quantity > 0
+                ORDER BY b.date_peremption ASC
+            ");
+        }
+    }
 }
