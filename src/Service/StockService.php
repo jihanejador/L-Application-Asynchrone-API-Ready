@@ -40,6 +40,19 @@ class StockService{
 
         $newQty = $batch['quantity'] - 1;
         $newStatus = ($newQty === 0) ? 'EXHAUSTED' : 'AVAILABLE';
-        
+
+        $updateStmt = $this->db->prepare("
+            UPDATE batches SET quantity = :qty, status = :status WHERE id = :id
+        ");
+        $updateStmt->execute([
+            'qty' => $newQty,
+            'status' => $newStatus,
+            'id' => $batch['id']
+        ]);
+        return [
+            'batch_id' => $batch['id'],
+            'new_quantity' => $newQty,
+            'num_lot' => $batch['num_lot']
+        ];
     }
 }
