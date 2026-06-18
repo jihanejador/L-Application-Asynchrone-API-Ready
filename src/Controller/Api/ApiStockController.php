@@ -20,5 +20,11 @@ class ApiStockController{
         $quantite = $_POST['quantite'] ?? null;
         $datePeremption = $_POST['date_peremption'] ?? null;
         $numLot = $_POST['num_lot'] ?? null;
+
+        if(!$medicamentId || !$quantite || !$datePeremption || !$numLot){
+            header('HTTP/1.1 400 Bad Request');
+            echo json_decode(['error' => 'Donnees incompletes'])
+            return;
+        }
     }
 }
