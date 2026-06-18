@@ -47,5 +47,13 @@ class ApiStockController{
             echo json_encode(['error' => 'ID Medicament requis']);
             return;
         }
+        $result = $this->stockService->deliverOneBoxFEFO((int)$medicamentId);
+
+        if ($result) {
+            echo json_encode(['status' => 'success', 'data' => $result]);
+        } else {
+            header('HTTP/1.1 404 Not Found');
+            echo json_encode(['error' => 'Stock épuisé (Règle FEFO) !']);
+        }
     }
 }
