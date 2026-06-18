@@ -33,5 +33,13 @@ class StockService{
         ");
         $stmt->execute(['med_id' => $medicamentId]);
         $batch = $stmt->fetch();
+
+        if (!batch) {
+            return null;
+        }
+
+        $newQty = $batch['quantity'] - 1;
+        $newStatus = ($newQty === 0) ? 'EXHAUSTED' : 'AVAILABLE';
+        
     }
 }
