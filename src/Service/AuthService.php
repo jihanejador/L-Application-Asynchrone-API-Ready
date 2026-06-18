@@ -7,4 +7,10 @@ class AuthService{
             session_start();
         }
     }
+    public function isAuthenticated(): bool{
+        return isset($_SESSION['user']);
+    }
+    public function getUserRole(): ?string{
+        return $_SESSION['user']['role'] ?? null;
+    }
 }
