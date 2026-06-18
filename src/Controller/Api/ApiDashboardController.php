@@ -8,4 +8,9 @@ use PDO;
 class ApiDashboardController{
     private AuthService $authService;
     private PDO $db;
+
+    public function __construct(){
+        $this->authService = new AuthService();
+        $this->db = Database::getConnection();
+    }
 }
