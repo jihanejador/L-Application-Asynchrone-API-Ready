@@ -16,4 +16,10 @@ if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
         $controller->addBatch();
         exit;
     }
+
+    if($uri === '/api/v1/batches' && $method === 'GET'){
+        $controller = new ApiDshboardController();
+        $controller->getBatches();
+        exit;
+    }
 }
