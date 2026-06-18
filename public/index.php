@@ -28,4 +28,10 @@ if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
         $controller->checkout();
         exit;
     }
+
+    if($uri === '/api/v1/batches/destroy' && $method === 'POST'){
+        $controller = new ApiStockController();
+        $controller->destroyBatch();
+        exit;
+    }
 }
