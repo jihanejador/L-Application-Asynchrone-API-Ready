@@ -67,4 +67,14 @@ class ApiStockController{
             echo json_encode(['error' => 'ID du Lot requis']);
             return;
         }
+        $success = $this->stockService->forceDestroyBatch((int)$batchId);
+
+        if ($success) {
+            echo json_encode(['status' => 'success', 'message' => 'Lot marqué EXPIRED. Quantité à 0.']);
+        } else {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo json_encode(['error' => 'Impossible de détruire ce lot']);
+        }
+    }
+
 }
