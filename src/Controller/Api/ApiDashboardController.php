@@ -33,5 +33,7 @@ class ApiDashboardController{
                 ORDER BY b.date_peremption ASC
             ");
         }
+        $stmt->execute();
+        $batches = $stmt->fetchAll();
     }
 }
