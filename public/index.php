@@ -9,4 +9,7 @@ use App\Controller\Api\ApiDshboardController;
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-
+if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
+    header('Content-Type: application/json');
+    
+}
