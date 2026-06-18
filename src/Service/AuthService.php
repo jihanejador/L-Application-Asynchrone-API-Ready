@@ -22,4 +22,11 @@ class AuthService{
             exit;
         }
     }
+    public function checkRoleOrRedirect(string $requiredRole): void {
+        if (!$this->isAuthenticated() || $this->getUserRole() !== $requiredRole) {
+            header('HTTP/1.1 403 Forbidden');
+            echo "<h1>403 - Accès Interdit</h1><p>Seul le rôle <b>$requiredRole</b> peut voir cette page.</p>";
+            exit;
+        }
+    }
 }
