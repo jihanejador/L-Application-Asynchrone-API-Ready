@@ -26,6 +26,12 @@ class ApiDashboardController{
                 WHERE b.date_peremption <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) AND b.quantity > 0
                 ORDER BY b.date_peremption ASC
             ");
+        } else {
+            $stmt = $this->db->prepare("
+                SELECT b.*, m.name as medicament_name FROM batches b
+                JOIN medicaments m ON b.medicament_id = m.id
+                ORDER BY b.date_peremption ASC
+            ");
         }
     }
 }
