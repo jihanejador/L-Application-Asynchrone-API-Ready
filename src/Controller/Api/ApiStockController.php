@@ -12,4 +12,13 @@ class ApiStockController{
         $this->authService = new AuthService();
         $this->stockService = new StockService();
     }
+
+    public function addBatch(): void{
+        $this->authService->checkRoleOrAbort('PREPARATEUR');
+
+        $medicamentId = $_POST['medicament_id'] ?? null;
+        $quantite = $_POST['quantite'] ?? null;
+        $datePeremption = $_POST['date_peremption'] ?? null;
+        $numLot = $_POST['num_lot'] ?? null;
+    }
 }
