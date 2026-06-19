@@ -95,7 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                     const result = await response.json();
 
-                   
+                    if (response.ok) {
+                        loadDashboardData('all');
+                    } else {
+                        alert(result.error);
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
             }
 
 
