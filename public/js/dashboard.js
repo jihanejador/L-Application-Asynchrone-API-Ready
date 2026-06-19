@@ -127,7 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         } else {
                             alert(result.error);
-                        }
+                        } catch (error) {
+                        console.error(error);
+                    }
+                }
+            }
 
 
 });
