@@ -69,7 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 tableBody.appendChild(tr);
             });
 
+        }catch (error) {
+            console.error('Erreur Fetch Dashboard:', error);
         }
+    }
 
 
 });
