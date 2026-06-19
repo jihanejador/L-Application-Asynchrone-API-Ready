@@ -117,5 +117,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                         const result = await response.json();
 
+                        if (response.ok) {
+                            const row = document.getElementById(`batch-row-${batchId}`);
+                            if (row) {
+                                row.style.opacity = '0.5';
+                                row.style.backgroundColor = '#f3f4f6';
+                                const qtyCell = document.getElementById(`qty-text-${batchId}`);
+                                if (qtyCell) qtyCell.textContent = '0';
+                            }
+                        } else {
+                            alert(result.error);
+                        }
+
 
 });
