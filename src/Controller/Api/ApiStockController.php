@@ -4,16 +4,16 @@ namespace App\Controller\Api;
 use App\Service\AuthService;
 use App\Service\StockService;
 
-class ApiStockController{
+class ApiStockController {
     private AuthService $authService;
     private StockService $stockService;
 
-    public function __construct(){
+    public function __construct() {
         $this->authService = new AuthService();
         $this->stockService = new StockService();
     }
 
-    public function addBatch(): void{
+    public function addBatch(): void {
         $this->authService->checkRoleOrAbort('PREPARATEUR');
 
         $medicamentId = $_POST['medicament_id'] ?? null;
@@ -21,32 +21,34 @@ class ApiStockController{
         $datePeremption = $_POST['date_peremption'] ?? null;
         $numLot = $_POST['num_lot'] ?? null;
 
-        if(!$medicamentId || !$quantite || !$datePeremption || !$numLot){
+        if (!$medicamentId || !$quantite || !$datePeremption || !$numLot) {
             header('HTTP/1.1 400 Bad Request');
-            echo json_decode(['error' => 'Donnees incompletes'])
+            echo json_encode(['error' => 'Donnees incompletes']);
             return;
         }
 
         $success = $this->stockService->insertBatch((int)$medicamentId, (int)$quantite, $datePeremption, $numLot);
 
-        if ($success){
+        if ($success) {
             echo json_encode(['status' => 'success', 'message' => 'Lot ajoute de maniere asynchrone !']);
-        } else{
+        } else {
             header('HTTP/1.1 500 Internal Server Error');
             echo json_encode(['error' => 'Erreur lors de l\'insertion']);
         }
     }
-    public function checkout(): void{
+
+    public function checkout(): void {
         $this->authService->checkRoleOrAbort('PREPARATEUR');
 
         $input = json_decode(file_get_contents('php://input'), true);
         $medicamentId = $input['medicament_id'] ?? null;
 
-        if(!$medicamentId){
+        if (!$medicamentId) {
             header('HTTP/1.1 400 Bad Request');
             echo json_encode(['error' => 'ID Medicament requis']);
             return;
         }
+        
         $result = $this->stockService->deliverOneBoxFEFO((int)$medicamentId);
 
         if ($result) {
@@ -56,6 +58,7 @@ class ApiStockController{
             echo json_encode(['error' => 'Stock épuisé (Règle FEFO) !']);
         }
     }
+
     public function destroyBatch(): void {
         $this->authService->checkRoleOrAbort('PHARMACIEN');
 
@@ -67,6 +70,7 @@ class ApiStockController{
             echo json_encode(['error' => 'ID du Lot requis']);
             return;
         }
+        
         $success = $this->stockService->forceDestroyBatch((int)$batchId);
 
         if ($success) {
@@ -76,5 +80,4 @@ class ApiStockController{
             echo json_encode(['error' => 'Impossible de détruire ce lot']);
         }
     }
-
 }
