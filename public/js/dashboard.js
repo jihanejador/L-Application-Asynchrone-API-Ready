@@ -46,6 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (badgeCounter) {
                 badgeCounter.textContent = result.stats.périssent_le_mois_prochain;
             }
+            tableBody.innerHTML = ''; 
+
+            result.batches.forEach(batch => {
+                const tr = document.createElement('tr');
+                tr.setAttribute('id', `batch-row-${batch.id}`);
 
 
 });
