@@ -81,5 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadDashboardData('all');
 
+    if (tableBody) {
+        tableBody.addEventListener('click', async (e) => {
+            
+            if (e.target.classList.contains('btn-checkout')) {
+                const medId = e.target.getAttribute('data-med-id');
+
+                try {
+                    const response = await fetch('/api/v1/batches/checkout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ medicament_id: medId })
+                    });
+                    const result = await response.json();
+
+                   
+            }
+
 
 });
