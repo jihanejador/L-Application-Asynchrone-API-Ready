@@ -1,32 +1,49 @@
 <?php
 namespace App\Service;
 
-class AuthService{
-    public function __construct(){
-        if(session_status() === PHP_SESSION_NONE){
+use App\Config\Database;
+
+class AuthService {
+    
+    public function __construct() {
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
     }
-    public function isAuthenticated(): bool{
-        return isset($_SESSION['user']);
-    }
-    public function getUserRole(): ?string{
-        return $_SESSION['user']['role'] ?? null;
+
+    public function login(string $email, string $password): ?object {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT * FROM users WHERE email = ? AND password = ? LIMIT 1");
+        $stmt->execute([$email, $password]);
+        $user = $stmt->fetch();
+
+        if ($user) {
+            $_SESSION['user'] = [
+                'id' => $user->id,
+                'nom' => $user->nom,
+                'role' => strtolower($user->role)
+            ];
+            return (object)$_SESSION['user'];
+        }
+        return null;
     }
 
-    public function checkRoleOrAbort(string $requiredRole): void {
-        if (!$this->isAuthenticated() || $this->getUserRole() !== $requiredRole) {
-            header('HTTP/1.1 403 Forbidden');
-            header('Content-Type: application/json');
-            echo json_encode(['error' => "Accès interdit. Rôle requis : $requiredRole"]);
-            exit;
-        }
+    public function logout(): void {
+        $_SESSION = array();
+        session_destroy();
     }
-    public function checkRoleOrRedirect(string $requiredRole): void {
-        if (!$this->isAuthenticated() || $this->getUserRole() !== $requiredRole) {
-            header('HTTP/1.1 403 Forbidden');
-            echo "<h1>403 - Accès Interdit</h1><p>Seul le rôle <b>$requiredRole</b> peut voir cette page.</p>";
-            exit;
-        }
+
+    public function isAuthenticated(): bool {
+        return isset($_SESSION['user']);
+    }
+
+    public function getCurrentUser(): ?array {
+        return $_SESSION['user'] ?? null;
+    }
+
+    public function hasRole(array $allowedRoles): bool {
+        $user = $this->getCurrentUser();
+        if (!$user) return false;
+        return in_array($user['role'], array_map('strtolower', $allowedRoles));
     }
 }

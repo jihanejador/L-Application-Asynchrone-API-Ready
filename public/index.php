@@ -9,56 +9,45 @@ spl_autoload_register(function ($class) {
     if (file_exists($file)) { require_once $file; }
 });
 
+require_once __DIR__ . '/../config/database.php';
+
 use App\Controller\Web\AuthController;
 use App\Controller\Web\AdminController;
 use App\Controller\Api\ApiStockController;
 use App\Controller\Api\ApiDashboardController;
+use App\Service\AuthService;
+
+$authService = new AuthService();
 
 $route = '/';
 if (isset($_GET['url'])) {
     $route = '/' . trim($_GET['url'], '/');
 }
-
 $method = $_SERVER['REQUEST_METHOD'];
 
 if (strpos($route, '/api/v1') === 0 || $route === '/stock/add') {
     header('Content-Type: application/json');
-    
     if ($route === '/stock/add' && $method === 'POST') {
-        $controller = new ApiStockController();
-        $controller->addBatch();
-        exit;
+        (new ApiStockController())->addBatch(); exit;
     }
-
     if ($route === '/api/v1/batches' && $method === 'GET') {
-        $controller = new ApiDashboardController();
-        $controller->getBatches();
-        exit;
+        (new ApiDashboardController())->getBatches(); exit;
     }
-
-    if ($route === '/api/v1/batches/checkout' && ($method === 'POST' || $method === 'PATCH')) {
-        $controller = new ApiStockController();
-        $controller->checkout();
-        exit;
-    }
-
-    if ($route === '/api/v1/batches/destroy' && $method === 'POST') {
-        $controller = new ApiStockController();
-        $controller->destroyBatch();
-        exit;
-    }
-
     header('HTTP/1.1 404 Not Found');
-    echo json_encode(['error' => 'Route API non trouvee']);
-    exit;
+    echo json_encode(['error' => 'Route non trouvée']); exit;
 }
 
 if ($route === '/login') {
-    $controller = new AuthController();
-    $controller->showLogin();
-} elseif ($route === '/admin/reports') {
-    $controller = new AdminController();
-    $controller->showReports();
+    (new AuthController())->showLogin();
+} elseif ($route === '/logout') {
+    (new AuthController())->logout();
+} elseif ($route === '/reports') {
+    (new AdminController())->showReports();
 } else {
-    echo "<h1>Page d'accueil / Dashboard HTML Initial</h1><p>Connectez-vous pour voir l'application.</p>";
+    if (!$authService->isAuthenticated()) {
+        header('Location: index.php?url=login');
+        exit;
+    }
+    $user = $authService->getCurrentUser();
+    require_once __DIR__ . '/../templates/dashboard.php';
 }

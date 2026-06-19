@@ -1,83 +1,47 @@
 <?php
 namespace App\Controller\Api;
 
-use App\Service\AuthService;
 use App\Service\StockService;
+use App\Service\AuthService;
 
 class ApiStockController {
-    private AuthService $authService;
     private StockService $stockService;
+    private AuthService $authService;
 
     public function __construct() {
-        $this->authService = new AuthService();
         $this->stockService = new StockService();
+        $this->authService = new AuthService();
     }
 
     public function addBatch(): void {
-        $this->authService->checkRoleOrAbort('PREPARATEUR');
+        if (!$this->authService->hasRole(['admin', 'preparateur'])) {
+            header('HTTP/1.1 403 Forbidden');
+            echo json_encode(['error' => 'Action non autorisée']);
+            exit;
+        }
 
-        $medicamentId = $_POST['medicament_id'] ?? null;
+        $medicament_id = $_POST['medicament_id'] ?? null;
+        $numero_lot = $_POST['numero_lot'] ?? null;
         $quantite = $_POST['quantite'] ?? null;
-        $datePeremption = $_POST['date_peremption'] ?? null;
-        $numLot = $_POST['num_lot'] ?? null;
+        $date_peremption = $_POST['date_peremption'] ?? null;
 
-        if (!$medicamentId || !$quantite || !$datePeremption || !$numLot) {
-            header('HTTP/1.1 400 Bad Request');
-            echo json_encode(['error' => 'Donnees incompletes']);
-            return;
-        }
+        if ($medicament_id && $numero_lot && $quantite && $date_peremption) {
+            $success = $this->stockService->createLot([
+                'medicament_id' => $medicament_id,
+                'numero_lot' => $numero_lot,
+                'quantite' => $quantite,
+                'date_peremption' => $date_peremption
+            ]);
 
-        $success = $this->stockService->insertBatch((int)$medicamentId, (int)$quantite, $datePeremption, $numLot);
-
-        if ($success) {
-            echo json_encode(['status' => 'success', 'message' => 'Lot ajoute de maniere asynchrone !']);
+            if ($success) {
+                echo json_encode(['success' => true, 'message' => 'Lot ajouté avec succès']);
+            } else {
+                header('HTTP/1.1 500 Internal Server Error');
+                echo json_encode(['error' => 'Erreur lors de l\'ajout']);
+            }
         } else {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo json_encode(['error' => 'Erreur lors de l\'insertion']);
-        }
-    }
-
-    public function checkout(): void {
-        $this->authService->checkRoleOrAbort('PREPARATEUR');
-
-        $input = json_decode(file_get_contents('php://input'), true);
-        $medicamentId = $input['medicament_id'] ?? null;
-
-        if (!$medicamentId) {
             header('HTTP/1.1 400 Bad Request');
-            echo json_encode(['error' => 'ID Medicament requis']);
-            return;
-        }
-        
-        $result = $this->stockService->deliverOneBoxFEFO((int)$medicamentId);
-
-        if ($result) {
-            echo json_encode(['status' => 'success', 'data' => $result]);
-        } else {
-            header('HTTP/1.1 404 Not Found');
-            echo json_encode(['error' => 'Stock épuisé (Règle FEFO) !']);
-        }
-    }
-
-    public function destroyBatch(): void {
-        $this->authService->checkRoleOrAbort('PHARMACIEN');
-
-        $input = json_decode(file_get_contents('php://input'), true);
-        $batchId = $input['batch_id'] ?? null;
-
-        if (!$batchId) {
-            header('HTTP/1.1 400 Bad Request');
-            echo json_encode(['error' => 'ID du Lot requis']);
-            return;
-        }
-        
-        $success = $this->stockService->forceDestroyBatch((int)$batchId);
-
-        if ($success) {
-            echo json_encode(['status' => 'success', 'message' => 'Lot marqué EXPIRED. Quantité à 0.']);
-        } else {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo json_encode(['error' => 'Impossible de détruire ce lot']);
+            echo json_encode(['error' => 'Données incomplètes']);
         }
     }
 }

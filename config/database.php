@@ -5,30 +5,29 @@ use PDO;
 use PDOException;
 
 class Database {
-    private static ?PDO $instance = null;
+    private static ?PDO $connection = null;
 
-    public static function getConnection(): PDO{
-        if(self::$instance === null){
-            try{
+    public static function getConnection(): PDO {
+        if (self::$connection === null) {
+            try {
                 $host = 'localhost';
                 $dbname = 'pharma_fefo';
                 $username = 'root';
                 $password = '';
 
-                self::$instance = new PDO(
+                self::$connection = new PDO(
                     "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
                     $username,
                     $password,
                     [
-                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-                        PDO::ATTR_EMULATE_PREPARES => FALSE,
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
                     ]
                 );
-            } catch (PDOException $e){
-                die("Erreur de connexion DB :" . $e->getMessage());
+            } catch (PDOException $e) {
+                die("Erreur de connexion à la base de données : " . $e->getMessage());
             }
         }
-        return self::$instance;
+        return self::$connection;
     }
 }

@@ -1,55 +1,18 @@
 <?php
 namespace App\Controller\Api;
 
-use App\Service\AuthService;
-use App\Config\Database;
-use PDO;
+use App\Service\StockService;
 
 class ApiDashboardController {
-    private AuthService $authService;
-    private PDO $db;
+    private StockService $stockService;
 
     public function __construct() {
-        $this->authService = new AuthService();
-        $this->db = Database::getConnection();
+        $this->stockService = new StockService();
     }
 
     public function getBatches(): void {
-        $this->authService->checkRoleOrAbort('PHARMACIEN');
-
         $criteria = $_GET['criteria'] ?? 'all';
-
-        if ($criteria === 'critical') {
-            $stmt = $this->db->prepare("
-                SELECT b.*, m.name as medicament_name FROM batches b
-                JOIN medicaments m ON b.medicament_id = m.id
-                WHERE b.date_peremption <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) AND b.quantity > 0
-                ORDER BY b.date_peremption ASC
-            ");
-        } else {
-            $stmt = $this->db->prepare("
-                SELECT b.*, m.name as medicament_name FROM batches b
-                JOIN medicaments m ON b.medicament_id = m.id
-                ORDER BY b.date_peremption ASC
-            ");
-        }
-        $stmt->execute();
-        $batches = $stmt->fetchAll();
-
-        $countStmt = $this->db->prepare("
-            SELECT COUNT(*) as total_next_month FROM batches
-            WHERE date_peremption BETWEEN DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
-                                          AND DATE_ADD(CURDATE(), INTERVAL 2 MONTH)
-               AND quantity > 0
-        ");
-        $countStmt->execute();
-        $countData = $countStmt->fetch(); 
-
-        echo json_encode([
-            'batches' => $batches,
-            'stats' => [
-                'périssent_le_mois_prochain' => $countData ? (int)$countData->total_next_month : 0
-            ]
-        ]);
+        $data = $this->stockService->getDashboardData($criteria);
+        echo json_encode($data);
     }
 }
