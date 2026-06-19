@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    
+    let currentFilter = 'all'; 
+
     const addBatchForm = document.getElementById('add-batch-form');
     if (addBatchForm) {
         addBatchForm.addEventListener('submit', async (e) => {
@@ -18,11 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     alert('Succès : ' + result.message);
                     addBatchForm.reset();
-                    if (document.getElementById('batches-table-body')) {
-                        loadDashboardData('all');
-                    }
+                    loadDashboardData(currentFilter); 
                 } else {
-                    alert('Erreur : ' + result.error);
+                    alert('Erreur : ' + (result.error || 'Une erreur est survenue'));
                 }
             } catch (error) {
                 console.error('Erreur lors de l\'ajout :', error);
@@ -30,12 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    
     const tableBody = document.getElementById('batches-table-body');
     const badgeCounter = document.getElementById('next-month-counter');
 
     async function loadDashboardData(criteria = 'all') {
         if (!tableBody) return; 
+        currentFilter = criteria; 
 
         try {
             const response = await fetch(`/api/v1/batches?criteria=${criteria}`);
@@ -46,30 +45,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (badgeCounter) {
+            if (badgeCounter && result.stats) {
                 badgeCounter.textContent = result.stats.périssent_le_mois_prochain;
             }
 
             tableBody.innerHTML = ''; 
 
+            if (result.batches.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: #9ca3af;">Aucun lot trouvé.</td></tr>`;
+                return;
+            }
+
             result.batches.forEach(batch => {
                 const tr = document.createElement('tr');
                 tr.setAttribute('id', `batch-row-${batch.id}`);
                 
-                if (batch.quantity == 0 || batch.status === 'EXPIRED') {
+                if (parseInt(batch.quantity) === 0 || batch.status === 'EXPIRED') {
                     tr.style.opacity = '0.5';
                     tr.style.backgroundColor = '#f3f4f6';
                 }
 
                 tr.innerHTML = `
-                    <td>${batch.num_lot}</td>
-                    <td>${batch.medicament_name}</td>
-                    <td id="qty-text-${batch.id}">${batch.quantity}</td>
-                    <td>${batch.date_peremption}</td>
-                    <td><span class="badge ${batch.status}">${batch.status}</span></td>
-                    <td>
-                        <button class="btn-checkout" data-med-id="${batch.medicament_id}">Délivrer 1 boîte</button>
-                        <button class="btn-destroy" data-batch-id="${batch.id}" style="background: red; color:white;">À détruire</button>
+                    <td style="padding: 10px; font-weight: bold;">${batch.medicament_name || 'Inconnu'}</td>
+                    <td style="padding: 10px;"><code>${batch.num_lot}</code></td>
+                    <td style="padding: 10px;" id="qty-text-${batch.id}">${batch.quantity} boîtes</td>
+                    <td style="padding: 10px;">${batch.date_peremption}</td>
+                    <td style="padding: 10px;"><span class="badge ${batch.status}">${batch.status}</span></td>
+                    <td style="padding: 10px;">
+                        <button class="btn-checkout" data-med-id="${batch.medicament_id}" style="background: #3b82f6; color:white; border:none; padding: 4px 8px; border-radius:4px; cursor:pointer;">Délivrer 1 boîte</button>
+                        <button class="btn-destroy" data-batch-id="${batch.id}" style="background: #ef4444; color:white; border:none; padding: 4px 8px; border-radius:4px; cursor:pointer; margin-left:5px;">À détruire</button>
                     </td>
                 `;
                 tableBody.appendChild(tr);
@@ -88,8 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadDashboardData('all');
 
-
-    
     if (tableBody) {
         tableBody.addEventListener('click', async (e) => {
             
@@ -105,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const result = await response.json();
 
                     if (response.ok) {
-                        loadDashboardData('all');
+                        loadDashboardData(currentFilter); 
                     } else {
                         alert(result.error);
                     }
@@ -114,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            
             if (e.target.classList.contains('btn-destroy')) {
                 const batchId = e.target.getAttribute('data-batch-id');
 
@@ -132,8 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 row.style.opacity = '0.5';
                                 row.style.backgroundColor = '#f3f4f6';
                                 const qtyCell = document.getElementById(`qty-text-${batchId}`);
-                                if (qtyCell) qtyCell.textContent = '0';
+                                if (qtyCell) qtyCell.textContent = '0 boîtes';
                             }
+                            loadDashboardData(currentFilter); 
                         } else {
                             alert(result.error);
                         }
