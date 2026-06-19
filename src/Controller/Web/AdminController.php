@@ -19,7 +19,7 @@ class AdminController{
         FROM batches
         WHERE status = 'EXPIRED'");
         $data = $stmt->fetch();
-        $perte = $data['perte_totale'] ?? 0;
+        $perte = $data->perte_totale ?? 0;
         echo "<!DOCTYPE html>
         <html lang='fr'>
         <head>
