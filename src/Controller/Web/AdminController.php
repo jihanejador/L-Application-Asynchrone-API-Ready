@@ -10,4 +10,9 @@ class AdminController{
     public function __construct(){
         $this->authService = new AuthService();
     }
+
+    public function showReports(): void{
+        $this->authService->checkRoleOrRedirect('ADMIN');
+        $db = Database::getConnection();
+    }
 }
