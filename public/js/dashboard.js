@@ -29,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    
     const tableBody = document.getElementById('batches-table-body');
     const badgeCounter = document.getElementById('next-month-counter');
 
@@ -43,18 +45,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(result.error);
                 return;
             }
+
             if (badgeCounter) {
                 badgeCounter.textContent = result.stats.périssent_le_mois_prochain;
             }
+
             tableBody.innerHTML = ''; 
 
             result.batches.forEach(batch => {
                 const tr = document.createElement('tr');
                 tr.setAttribute('id', `batch-row-${batch.id}`);
+                
                 if (batch.quantity == 0 || batch.status === 'EXPIRED') {
                     tr.style.opacity = '0.5';
                     tr.style.backgroundColor = '#f3f4f6';
                 }
+
                 tr.innerHTML = `
                     <td>${batch.num_lot}</td>
                     <td>${batch.medicament_name}</td>
@@ -69,10 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 tableBody.appendChild(tr);
             });
 
-        }catch (error) {
+        } catch (error) {
             console.error('Erreur Fetch Dashboard:', error);
         }
     }
+
     const filterAllBtn = document.getElementById('filter-all-btn');
     const filterCriticalBtn = document.getElementById('filter-critical-btn');
 
@@ -81,6 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadDashboardData('all');
 
+
+    
     if (tableBody) {
         tableBody.addEventListener('click', async (e) => {
             
@@ -127,11 +136,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         } else {
                             alert(result.error);
-                        } catch (error) {
+                        }
+                    } catch (error) {
                         console.error(error);
                     }
                 }
             }
-
-
+        });
+    }
 });
