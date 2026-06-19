@@ -6,51 +6,71 @@
     <title>PharmaFEFO - Dashboard</title>
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #10b981;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #334155;
+            --bg: #f0f7ff;
+            --sidebar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --accent-chibi: #e0f2fe;
+            --text-dark: #334155;
+            --text-muted: #64748b;
+            --primary-blue: #0284c7;
+            --border-color: #e2e8f0;
+            --success: #10b981;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
-        .sidebar { width: 260px; background: var(--primary); color: white; padding: 25px 20px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
-        .sidebar h1 { font-size: 20px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 10px; color: var(--accent); }
-        .user-info { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
-        .user-info span { display: block; color: #94a3b8; font-size: 11px; text-transform: uppercase; margin-top: 4px; }
-        .btn-logout { background: #ef4444; color: white; text-decoration: none; text-align: center; padding: 10px; border-radius: 6px; font-weight: bold; transition: 0.2s; display: block; margin-top: auto; }
-        .btn-logout:hover { background: #dc2626; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); color: var(--text-dark); display: flex; height: 100vh; overflow: hidden; }
+        
+        .sidebar { width: 260px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); padding: 25px 20px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+        .sidebar h1 { font-size: 22px; margin: 0 0 30px 0; display: flex; align-items: center; gap: 10px; color: var(--primary-blue); font-weight: 700; }
+        .user-info { background: var(--bg); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .user-info strong { color: var(--primary-blue); display: block; font-size: 15px; }
+        .user-info span { display: block; color: var(--text-muted); font-size: 11px; text-transform: uppercase; margin-top: 5px; font-weight: 600; }
+        
+        .sidebar-menu { display: flex; flex-direction: column; gap: 10px; }
+        .menu-link { display: flex; align-items: center; gap: 10px; padding: 12px; color: var(--text-dark); text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; transition: 0.2s; }
+        .menu-link:hover { background: var(--accent-chibi); color: var(--primary-blue); }
+        .menu-link.active { background: var(--primary-blue); color: white; }
+
+        .btn-logout { background: #fef2f2; color: #ef4444; text-decoration: none; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; transition: 0.2s; display: block; border: 1px solid #fee2e2; }
+        .btn-logout:hover { background: #fee2e2; }
+
         .main-content { flex: 1; padding: 40px; overflow-y: auto; box-sizing: border-box; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .top-bar h2 { margin: 0; font-size: 24px; color: #1e293b; }
+        .top-bar h2 { margin: 0; font-size: 26px; color: #1e293b; font-weight: 700; }
+        
         .stats-container { display: flex; gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--card); flex: 1; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .stat-card h3 { margin: 0; font-size: 14px; color: #64748b; text-transform: uppercase; }
-        .stat-card .num { font-size: 28px; font-weight: bold; color: #0f172a; margin-top: 5px; }
-        .counter-badge { background: #fee2e2; color: #ef4444; font-size: 24px; font-weight: bold; padding: 10px 15px; border-radius: 8px; }
-        .filters { margin-bottom: 20px; display: flex; gap: 10px; }
-        .btn { border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; }
-        .btn-all { background: #e2e8f0; color: #475569; }
-        .btn-all:hover { background: #cbd5e1; }
-        .btn-critical { background: #fef3c7; color: #d97706; }
-        .btn-critical:hover { background: #fef08a; }
-        .table-container { background: var(--card); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 30px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border-color); flex: 1; padding: 22px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .stat-card h3 { margin: 0; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card .num { font-size: 20px; font-weight: 700; color: var(--text-dark); margin-top: 5px; }
+        .counter-badge { background: #fff1f2; color: #f43f5e; font-size: 26px; font-weight: bold; padding: 10px 18px; border-radius: 12px; border: 1px solid #ffe4e6; }
+
+        .filters { margin-bottom: 25px; display: flex; gap: 10px; background: white; padding: 6px; border-radius: 10px; border: 1px solid var(--border-color); width: max-content; }
+        .btn { border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.2s; background: transparent; color: var(--text-muted); }
+        .btn:hover { background: var(--bg); color: var(--text-dark); }
+        .btn.active { background: var(--accent-chibi); color: var(--primary-blue); }
+        .btn-critical-style { color: #b45309; }
+        .btn-critical-style:hover { background: #fef3c7; }
+
+        .table-container { background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; margin-bottom: 30px; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; }
-        th { background: #f8fafc; font-weight: 600; color: #64748b; font-size: 13px; text-transform: uppercase; }
-        tr:hover { background: #f8fafc; }
-        .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; }
-        .badge.ACTIF { background: #d1fae5; color: #065f46; }
-        .badge.EXPIRED { background: #fee2e2; color: #991b1b; }
-        .badge.EXHAUSTED { background: #f3f4f6; color: #374151; }
-        .form-section { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .form-section h3 { margin: 0 0 20px 0; font-size: 18px; color: #1e293b; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        .form-group label { font-size: 13px; font-weight: 600; color: #64748b; }
-        .form-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; transition: 0.2s; }
-        .form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
-        .btn-submit { background: var(--accent); color: white; padding: 11px 25px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-submit:hover { background: #059669; }
+        th, td { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
+        th { background: #f8fafc; font-weight: 600; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: #fdfeff; }
+
+        .badge { padding: 6px 14px; border-radius: 50px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
+        .badge.ACTIF { background: #e6fcf5; color: #0ca678; }
+        .badge.EXPIRED { background: #fff5f5; color: #f03e3e; }
+        .badge.EXHAUSTED { background: #f1f3f5; color: #495057; }
+
+        .form-section { background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); }
+        .form-section h3 { margin: 0 0 25px 0; font-size: 18px; color: #1e293b; font-weight: 700; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .form-group input { padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; transition: 0.2s; background: #fdfeff; }
+        .form-group input:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1); background: white; }
+        
+        .btn-submit { background: var(--primary-blue); color: white; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); }
+        .btn-submit:hover { background: #0274a9; box-shadow: 0 4px 16px rgba(2, 132, 199, 0.25); }
     </style>
 </head>
 <body>
@@ -60,6 +80,12 @@
             <div class="user-info">
                 <strong><?= htmlspecialchars($user['nom']) ?></strong>
                 <span>Rôle: <?= htmlspecialchars($user['role']) ?></span>
+            </div>
+            <div class="sidebar-menu">
+                <a href="index.php" class="menu-link active">📊 Stock Dashboard</a>
+                <?php if (strtolower($user['role']) === 'admin'): ?>
+                    <a href="index.php?url=reports" class="menu-link">🛡️ Rapport Financier</a>
+                <?php endif; ?>
             </div>
         </div>
         <a href="index.php?url=logout" class="btn-logout">Déconnexion</a>
@@ -81,8 +107,8 @@
         </div>
 
         <div class="filters">
-            <button id="filter-all-btn" class="btn btn-all">Tous les lots</button>
-            <button id="filter-critical-btn" class="btn btn-critical">🚨 Lots Critiques</button>
+            <button id="filter-all-btn" class="btn active">Tous les lots</button>
+            <button id="filter-critical-btn" class="btn btn-critical-style">🚨 Lots Critiques</button>
         </div>
 
         <div class="table-container">
