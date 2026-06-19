@@ -51,6 +51,25 @@ document.addEventListener('DOMContentLoaded', () => {
             result.batches.forEach(batch => {
                 const tr = document.createElement('tr');
                 tr.setAttribute('id', `batch-row-${batch.id}`);
+                if (batch.quantity == 0 || batch.status === 'EXPIRED') {
+                    tr.style.opacity = '0.5';
+                    tr.style.backgroundColor = '#f3f4f6';
+                }
+                tr.innerHTML = `
+                    <td>${batch.num_lot}</td>
+                    <td>${batch.medicament_name}</td>
+                    <td id="qty-text-${batch.id}">${batch.quantity}</td>
+                    <td>${batch.date_peremption}</td>
+                    <td><span class="badge ${batch.status}">${batch.status}</span></td>
+                    <td>
+                        <button class="btn-checkout" data-med-id="${batch.medicament_id}">Délivrer 1 boîte</button>
+                        <button class="btn-destroy" data-batch-id="${batch.id}" style="background: red; color:white;">À détruire</button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+        }
 
 
 });
