@@ -6,11 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addBatchForm) {
         addBatchForm.addEventListener('submit', async (e) => {
             e.preventDefault(); 
-
             const formData = new FormData(addBatchForm);
 
             try {
-                const response = await fetch('/stock/add', {
+                const response = await fetch('index.php?url=stock/add', {
                     method: 'POST',
                     body: formData
                 });
@@ -37,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentFilter = criteria; 
 
         try {
-            const response = await fetch(`/api/v1/batches?criteria=${criteria}`);
+            const response = await fetch(`index.php?url=api/v1/batches&criteria=${criteria}`);
             const result = await response.json();
 
             if (!response.ok) {
@@ -99,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const medId = e.target.getAttribute('data-med-id');
 
                 try {
-                    const response = await fetch('/api/v1/batches/checkout', {
+                    const response = await fetch('index.php?url=api/v1/batches/checkout', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ medicament_id: medId })
@@ -116,13 +115,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            
             if (e.target.classList.contains('btn-destroy')) {
                 const batchId = e.target.getAttribute('data-batch-id');
 
                 if (confirm("Voulez-vous vraiment détruire ce lot ?")) {
                     try {
-                        const response = await fetch('/api/v1/batches/destroy', {
+                        const response = await fetch('index.php?url=api/v1/batches/destroy', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ batch_id: batchId })
@@ -130,13 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         const result = await response.json();
 
                         if (response.ok) {
-                            const row = document.getElementById(`batch-row-${batchId}`);
-                            if (row) {
-                                row.style.opacity = '0.5';
-                                row.style.backgroundColor = '#f3f4f6';
-                                const qtyCell = document.getElementById(`qty-text-${batchId}`);
-                                if (qtyCell) qtyCell.textContent = '0 boîtes';
-                            }
                             loadDashboardData(currentFilter); 
                         } else {
                             alert(result.error);
