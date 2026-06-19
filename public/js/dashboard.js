@@ -79,5 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterAllBtn) filterAllBtn.addEventListener('click', () => loadDashboardData('all'));
     if (filterCriticalBtn) filterCriticalBtn.addEventListener('click', () => loadDashboardData('critical'));
 
+    loadDashboardData('all');
+
 
 });
