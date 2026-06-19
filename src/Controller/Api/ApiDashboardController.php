@@ -5,21 +5,21 @@ use App\Service\AuthService;
 use App\Config\Database;
 use PDO;
 
-class ApiDashboardController{
+class ApiDashboardController {
     private AuthService $authService;
     private PDO $db;
 
-    public function __construct(){
+    public function __construct() {
         $this->authService = new AuthService();
         $this->db = Database::getConnection();
     }
 
-    public function getBatches(): void{
+    public function getBatches(): void {
         $this->authService->checkRoleOrAbort('PHARMACIEN');
 
         $criteria = $_GET['criteria'] ?? 'all';
 
-        if($criteria === 'critical'){
+        if ($criteria === 'critical') {
             $stmt = $this->db->prepare("
                 SELECT b.*, m.name as medicament_name FROM batches b
                 JOIN medicaments m ON b.medicament_id = m.id
@@ -39,16 +39,16 @@ class ApiDashboardController{
         $countStmt = $this->db->prepare("
             SELECT COUNT(*) as total_next_month FROM batches
             WHERE date_peremption BETWEEN DATE_ADD(CURDATE(), INTERVAL 1 MONTH)
-                                      AND DATE_ADD(CURDATE(), INTERVAL 2 MONTH)
+                                          AND DATE_ADD(CURDATE(), INTERVAL 2 MONTH)
                AND quantity > 0
         ");
         $countStmt->execute();
-        $countData = $countStmt->fetch();
+        $countData = $countStmt->fetch(); 
 
         echo json_encode([
             'batches' => $batches,
             'stats' => [
-                'périssent_le_mois_prochain' => (int)$countData['total_next_month']
+                'périssent_le_mois_prochain' => $countData ? (int)$countData->total_next_month : 0
             ]
         ]);
     }
