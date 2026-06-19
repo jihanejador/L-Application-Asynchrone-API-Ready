@@ -4,17 +4,17 @@ namespace App\Service;
 use App\Config\Database;
 use PDO;
 
-class StockService{
+class StockService {
     private PDO $db;
 
-    public function __construct(){
+    public function __construct() {
         $this->db = Database::getConnection();
     }
 
     public function insertBatch(int $medicamentId, int $quantite, string $datePeremption, string $numLot): bool {
         $stmt = $this->db->prepare("
-        INSERT INTO batches (medicament_id, quantity, date_peremption, num_lot, status)
-        VALUES (:med_id, :qty, :date_p, :num_l, 'AVAILABLE')
+            INSERT INTO batches (medicament_id, quantity, date_peremption, num_lot, status)
+            VALUES (:med_id, :qty, :date_p, :num_l, 'AVAILABLE')
         ");
         return $stmt->execute([
             'med_id' => $medicamentId,
@@ -24,21 +24,21 @@ class StockService{
         ]);
     }
 
-    public function deliverOneBoxFEFO(int $medicamentId): ?array{
+    public function deliverOneBoxFEFO(int $medicamentId): ?array {
         $stmt = $this->db->prepare("
-        SELECT * FROM batches
-        WHERE medicament_id = :med_id AND quantity > 0 AND status = 'AVAILABLE'
-        ORDER BY date_peremption ASC
-        LIMIT 1
+            SELECT * FROM batches
+            WHERE medicament_id = :med_id AND quantity > 0 AND status = 'AVAILABLE'
+            ORDER BY date_peremption ASC
+            LIMIT 1
         ");
         $stmt->execute(['med_id' => $medicamentId]);
-        $batch = $stmt->fetch();
+        $batch = $stmt->fetch(); 
 
-        if (!batch) {
+        if (!$batch) {
             return null;
         }
 
-        $newQty = $batch['quantity'] - 1;
+        $newQty = $batch->quantity - 1;
         $newStatus = ($newQty === 0) ? 'EXHAUSTED' : 'AVAILABLE';
 
         $updateStmt = $this->db->prepare("
@@ -47,16 +47,17 @@ class StockService{
         $updateStmt->execute([
             'qty' => $newQty,
             'status' => $newStatus,
-            'id' => $batch['id']
+            'id' => $batch->id
         ]);
+        
         return [
-            'batch_id' => $batch['id'],
+            'batch_id' => $batch->id,
             'new_quantity' => $newQty,
-            'num_lot' => $batch['num_lot']
+            'num_lot' => $batch->num_lot
         ];
     }
 
-    public function forceDestroyBatch(int $batchId): bool{
+    public function forceDestroyBatch(int $batchId): bool {
         $stmt = $this->db->prepare("
             UPDATE batches SET quantity = 0, status = 'EXPIRED' WHERE id = :id
         ");
