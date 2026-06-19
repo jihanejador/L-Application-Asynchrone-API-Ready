@@ -4,32 +4,33 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use App\Controller\Web\AuthController;
 use App\Controller\Web\AdminController;
 use App\Controller\Api\ApiStockController;
-use App\Controller\Api\ApiDshboardController;
+use App\Controller\Api\ApiDashboardController;
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
+if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add') {
     header('Content-Type: application/json');
-    if($uri === '/sstock/add' && $method === 'POST'){
+    
+    if ($uri === '/stock/add' && $method === 'POST') {
         $controller = new ApiStockController();
         $controller->addBatch();
         exit;
     }
 
-    if($uri === '/api/v1/batches' && $method === 'GET'){
-        $controller = new ApiDshboardController();
+    if ($uri === '/api/v1/batches' && $method === 'GET') {
+        $controller = new ApiDashboardController();
         $controller->getBatches();
         exit;
     }
 
-    if($uri === '/api/v1/batches/checkout' && ($method === 'POST' || $method === 'PATCH')){
+    if ($uri === '/api/v1/batches/checkout' && ($method === 'POST' || $method === 'PATCH')) {
         $controller = new ApiStockController();
         $controller->checkout();
         exit;
     }
 
-    if($uri === '/api/v1/batches/destroy' && $method === 'POST'){
+    if ($uri === '/api/v1/batches/destroy' && $method === 'POST') {
         $controller = new ApiStockController();
         $controller->destroyBatch();
         exit;
@@ -40,10 +41,10 @@ if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add'){
     exit;
 }
 
-if($uri === '/login'){
+if ($uri === '/login') {
     $controller = new AuthController();
     $controller->showLogin();
-} elseif ($uri === '/admin/reports'){
+} elseif ($uri === '/admin/reports') {
     $controller = new AdminController();
     $controller->showReports();
 } else {
