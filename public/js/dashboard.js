@@ -29,6 +29,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    const tableBody = document.getElementById('batches-table-body');
+    const badgeCounter = document.getElementById('next-month-counter');
+
+    async function loadDashboardData(criteria = 'all') {
+        if (!tableBody) return; 
+
+        try {
+            const response = await fetch(`/api/v1/batches?criteria=${criteria}`);
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error(result.error);
+                return;
+            }
 
 
 });
