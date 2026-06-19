@@ -8,36 +8,41 @@ spl_autoload_register(function ($class) {
     $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
     if (file_exists($file)) { require_once $file; }
 });
+
 use App\Controller\Web\AuthController;
 use App\Controller\Web\AdminController;
 use App\Controller\Api\ApiStockController;
 use App\Controller\Api\ApiDashboardController;
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$route = '/';
+if (isset($_GET['url'])) {
+    $route = '/' . trim($_GET['url'], '/');
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
-if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add') {
+if (strpos($route, '/api/v1') === 0 || $route === '/stock/add') {
     header('Content-Type: application/json');
     
-    if ($uri === '/stock/add' && $method === 'POST') {
+    if ($route === '/stock/add' && $method === 'POST') {
         $controller = new ApiStockController();
         $controller->addBatch();
         exit;
     }
 
-    if ($uri === '/api/v1/batches' && $method === 'GET') {
+    if ($route === '/api/v1/batches' && $method === 'GET') {
         $controller = new ApiDashboardController();
         $controller->getBatches();
         exit;
     }
 
-    if ($uri === '/api/v1/batches/checkout' && ($method === 'POST' || $method === 'PATCH')) {
+    if ($route === '/api/v1/batches/checkout' && ($method === 'POST' || $method === 'PATCH')) {
         $controller = new ApiStockController();
         $controller->checkout();
         exit;
     }
 
-    if ($uri === '/api/v1/batches/destroy' && $method === 'POST') {
+    if ($route === '/api/v1/batches/destroy' && $method === 'POST') {
         $controller = new ApiStockController();
         $controller->destroyBatch();
         exit;
@@ -48,10 +53,10 @@ if (strpos($uri, '/api/v1') === 0 || $uri === '/stock/add') {
     exit;
 }
 
-if ($uri === '/login') {
+if ($route === '/login') {
     $controller = new AuthController();
     $controller->showLogin();
-} elseif ($uri === '/admin/reports') {
+} elseif ($route === '/admin/reports') {
     $controller = new AdminController();
     $controller->showReports();
 } else {
