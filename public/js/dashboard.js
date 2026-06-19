@@ -105,5 +105,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            if (e.target.classList.contains('btn-destroy')) {
+                const batchId = e.target.getAttribute('data-batch-id');
+
+                if (confirm("Voulez-vous vraiment détruire ce lot ?")) {
+                    try {
+                        const response = await fetch('/api/v1/batches/destroy', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ batch_id: batchId })
+                        });
+                        const result = await response.json();
+
 
 });
