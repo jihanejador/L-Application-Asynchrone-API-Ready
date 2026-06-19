@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(result.error);
                 return;
             }
+            if (badgeCounter) {
+                badgeCounter.textContent = result.stats.périssent_le_mois_prochain;
+            }
 
 
 });
