@@ -73,6 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erreur Fetch Dashboard:', error);
         }
     }
+    const filterAllBtn = document.getElementById('filter-all-btn');
+    const filterCriticalBtn = document.getElementById('filter-critical-btn');
+
+    if (filterAllBtn) filterAllBtn.addEventListener('click', () => loadDashboardData('all'));
+    if (filterCriticalBtn) filterCriticalBtn.addEventListener('click', () => loadDashboardData('critical'));
 
 
 });
