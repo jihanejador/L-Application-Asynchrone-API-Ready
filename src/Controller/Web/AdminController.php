@@ -14,5 +14,11 @@ class AdminController{
     public function showReports(): void{
         $this->authService->checkRoleOrRedirect('ADMIN');
         $db = Database::getConnection();
+
+        $stmt = $db->query("SELECT SUM(quantity * 15) as perte_totale 
+        FROM batches
+        WHERE status = 'EXPIRED'");
+        $data = $stmt->fetch();
+        $perte = $data['perte_totale'] ?? 0;
     }
 }
